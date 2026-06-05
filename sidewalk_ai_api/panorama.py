@@ -2,6 +2,16 @@ import os
 import time
 import requests
 import numpy as np
+
+HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/125.0.0.0 Safari/537.36"
+    ),
+    "Referer": "https://www.google.com/maps",
+    "Accept": "image/webp,image/apng,image/*,*/*;q=0.8",
+}
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import io
 from PIL import Image
@@ -130,7 +140,7 @@ class Panorama:
             f"&x={x}&y={y}&zoom={zoom}"
         )
         try:
-            response = requests.get(url)
+            response = requests.get(url, headers=HEADERS)
             if response.status_code == 200:
                 tile = Image.open(io.BytesIO(response.content))
                 if self.zoom != None or not self._is_black_tile(tile):
@@ -147,7 +157,7 @@ class Panorama:
                 f"&x={x}&y={y}&zoom=3"
             )
             try:
-                response = requests.get(fallback_url)
+                response = requests.get(fallback_url, headers=HEADERS)
                 if response.status_code == 200:
                     tile = Image.open(io.BytesIO(response.content))
                     self.zoom = 3
